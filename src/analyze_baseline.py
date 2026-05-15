@@ -25,6 +25,7 @@ import numpy as np
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib import animation
 
 from diagnostics import (
     fit_growth_rate, zonal_power_spectrum,
@@ -35,6 +36,7 @@ from diagnostics import (
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(HERE)   # repo root, parent of src/
 FIG_DIR = ""   # set by main()
+MOV_DIR = ""
 
 
 def load_run(amp, r1, r2, delta, seed, run_dir):
@@ -99,9 +101,11 @@ def main():
     path, d, tag = load_run(args.amp, r1, r2, args.delta, args.seed, args.run_dir)
     label = args.label or tag
     fig_dir = os.path.join(PROJECT_ROOT, "outputs", "figures", label)
+    mov_dir = os.path.join(PROJECT_ROOT, "outputs", "movies", label)
     os.makedirs(fig_dir, exist_ok=True)
-    global FIG_DIR
-    FIG_DIR = fig_dir
+    os.makedirs(mov_dir, exist_ok=True)
+    global FIG_DIR, MOV_DIR
+    FIG_DIR = fig_dir; MOV_DIR = mov_dir
     print(f"Loaded {path}")
     t   = d['t']
     EKE = d['EKE']; Zq = d['Zq']
@@ -431,6 +435,14 @@ def main():
              skew1_sw=skew1_sw, skew2_sw=skew2_sw,
              kurt1_sw=kurt1_sw, kurt2_sw=kurt2_sw)
 
+    # -------- movies (q' and psi), GIF via PillowWriter --------
+    print("Writing movies (this is the slow part)...", flush=True)
+    write_movie(tf, q1f, q2f, mode='q',
+                path=os.path.join(MOV_DIR, "q_prime.gif"),
+                x_axis=x_axis, y_axis=y_axis)
+    write_movie(tf, psi1f, psi2f, mode='psi',
+                path=os.path.join(MOV_DIR, "psi.gif"),
+                x_axis=x_axis, y_axis=y_axis)
     print("Done.")
 
 
@@ -443,6 +455,45 @@ def _erfinv(x):
         # Beasley-Springer-Moro fallback.
         x = np.clip(x, -1 + 1e-12, 1 - 1e-12)
         return np.sign(x) * np.sqrt(-np.log(1 - np.abs(x)))
+
+
+def write_movie(t, f1, f2, mode, path, x_axis, y_axis, fps=15):
+    """Animate two side-by-side fields and save as GIF (PillowWriter).
+
+    We write GIF directly to avoid an ffmpeg dependency. For .mp4 output,
+    swap the writer for animation.FFMpegWriter and change the extension.
+    """
+    if mode == 'q':
+        a = f1 - f1.mean(axis=2, keepdims=True)
+        b = f2 - f2.mean(axis=2, keepdims=True)
+        labels = ("$q_1'$", "$q_2'$"); cmap = 'RdBu_r'
+    else:
+        a = f1; b = f2
+        labels = ("$\\psi_1$", "$\\psi_2$"); cmap = 'RdBu_r'
+    vmax = float(np.percentile(np.abs(np.concatenate([a.ravel(), b.ravel()])), 99))
+    if vmax <= 0:
+        vmax = 1.0
+    fig, axes = plt.subplots(1, 2, figsize=(11, 4.5))
+    extent = [x_axis.min(), x_axis.max(), y_axis.min(), y_axis.max()]
+    im1 = axes[0].imshow(a[0], origin='lower', aspect='auto', extent=extent,
+                         vmin=-vmax, vmax=vmax, cmap=cmap)
+    im2 = axes[1].imshow(b[0], origin='lower', aspect='auto', extent=extent,
+                         vmin=-vmax, vmax=vmax, cmap=cmap)
+    title = fig.suptitle(f"{labels[0]} | {labels[1]}     t = {t[0]:.2f}")
+    for ax, lab in zip(axes, labels):
+        ax.set_xlabel("x"); ax.set_ylabel("y"); ax.set_title(lab)
+    plt.colorbar(im1, ax=axes[0]); plt.colorbar(im2, ax=axes[1])
+
+    def update(i):
+        im1.set_data(a[i]); im2.set_data(b[i])
+        title.set_text(f"{labels[0]} | {labels[1]}     t = {t[i]:.2f}")
+        return im1, im2, title
+
+    anim = animation.FuncAnimation(fig, update, frames=len(t),
+                                   interval=1000 / fps, blit=False)
+    anim.save(path, writer=animation.PillowWriter(fps=fps))
+    print(f"  wrote {path}")
+    plt.close(fig)
 
 
 if __name__ == '__main__':

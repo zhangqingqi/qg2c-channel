@@ -182,12 +182,13 @@ qg2c-channel/
 │   ├── run_one_case.py     # per-case driver + diagnostics
 │   ├── run_single.py       # CLI wrapper around run_one_case
 │   ├── diagnostics.py      # EKE, Zq, spectra, skew/kurt, growth fit
-│   └── analyze_baseline.py # post-run plotting pipeline (figs 01/03/05/07/10/11)
+│   └── analyze_baseline.py # post-run plotting pipeline (figs 01/03/05/07/10/11 + movies)
 ├── slurm/
 │   ├── submit_jax_gpu.sbatch
 │   └── submit_cpu.sbatch
 └── docs/
-    ├── channel_diagram.svg
+    ├── channel_diagram.png
+    ├── make_channel_diagram.py
     └── figures/             # README assets
 ```
 
@@ -195,6 +196,6 @@ qg2c-channel/
 
 ## Acknowledgements
 
-Port of the MIT 12.820 (Geophysical Fluid Dynamics II) reference MATLAB
+Port of Glenn Flierl's reference MATLAB
 solver. JAX/GPU port and asymmetric-friction extension by
 [@zhangqingqi](https://github.com/zhangqingqi).
