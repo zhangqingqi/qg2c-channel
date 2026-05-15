@@ -1,7 +1,7 @@
 # qg2c-channel
 
 A two-layer quasi-geostrophic (QG) channel model on a beta plane, ported from
-the original MATLAB reference solver of MIT-12.820 to Python (numpy/scipy) and
+the original MATLAB reference solver of Glenn Flierl in class MIT-12.820 to Python (numpy/scipy) and
 to JAX/GPU. Used to study baroclinic instability, eddy saturation, and
 filament formation in the lower layer.
 
@@ -24,56 +24,74 @@ A periodic zonal channel of length `L = 2W` with rigid walls at `y = 0` and
 `y = W`. Two active layers of thickness `H1 = δ H2 / (1+δ)` and
 `H2 = 1 / (1+δ)` (non-dimensional, sum to 1).
 
-![channel diagram](docs/channel_diagram.svg)
+![channel diagram](docs/channel_diagram.png)
 
 ### Equations
 
-For each layer $i \in \{1, 2\}$ with the other layer indexed $j$:
+$\psi_k$ is the geostrophic stream function in layer $k$, $q_k$ the eddy PV
+anomaly, $R_d$ the deformation radius, and $\delta = H_1 / H_2$ the
+layer-thickness ratio.
 
-**Stream function ↔ PV inversion**
+**Stream function ↔ PV inversion** (layer 1 and layer 2 written out):
 
 $$
-q_i \;=\; \nabla^{2} \psi_i \;+\; F_i\,(\psi_j - \psi_i),
+q_1 = \nabla^2 \psi_1 + F_1 (\psi_2 - \psi_1)
+$$
+
+$$
+q_2 = \nabla^2 \psi_2 + F_2 (\psi_1 - \psi_2)
+$$
+
+with
+
+$$
+F_1 = \frac{1}{R_d^{\,2}\,(1+\delta)},
 \qquad
-F_1 = \frac{1}{R_d^{2}(1+\delta)},\quad F_2 = \delta\,F_1 .
+F_2 = \delta\, F_1 .
 $$
 
-Here $\psi_i$ is the geostrophic stream function, $q_i$ the eddy PV anomaly,
-$R_d$ the deformation radius, and $\delta = H_1 / H_2$ the layer-thickness
-ratio.
-
-**Velocities**
+**Velocities** (same form in both layers):
 
 $$
-u_i = -\partial_y \psi_i, \qquad v_i = \partial_x \psi_i .
+u_k = -\frac{\partial \psi_k}{\partial y},
+\qquad
+v_k = \frac{\partial \psi_k}{\partial x},
+\qquad k = 1, 2.
 $$
 
-**Total PV (used in advection)**
+**Total PV** (eddy PV plus planetary background $\beta y$, with $W/2$ subtracted
+so that $\beta(y - W/2)$ has zero channel mean):
 
 $$
-Q_i \;=\; q_i \;+\; \beta\!\left(y - \tfrac{W}{2}\right).
+Q_1 = q_1 + \beta\,(y - W/2)
 $$
 
-**Evolution**
+$$
+Q_2 = q_2 + \beta\,(y - W/2)
+$$
+
+**Evolution.** Layer 1:
 
 $$
 \frac{\partial q_1}{\partial t}
- + \frac{\partial}{\partial x}\!\bigl(u_1\,Q_1\bigr)
- + \frac{\partial}{\partial y}\!\bigl(v_1\,Q_1\bigr)
- \;=\; -\,r\,F_1\,q_{\text{force}}(y) \;-\; r_1\,q_1 ,
+ + \frac{\partial (u_1 Q_1)}{\partial x}
+ + \frac{\partial (v_1 Q_1)}{\partial y}
+ \;=\; -\, r\, F_1\, q_\text{force}(y) \;-\; r_1\, q_1
 $$
+
+Layer 2:
 
 $$
 \frac{\partial q_2}{\partial t}
- + \frac{\partial}{\partial x}\!\bigl(u_2\,Q_2\bigr)
- + \frac{\partial}{\partial y}\!\bigl(v_2\,Q_2\bigr)
- \;=\; +\,r\,F_2\,q_{\text{force}}(y) \;-\; r_2\,q_2 ,
+ + \frac{\partial (u_2 Q_2)}{\partial x}
+ + \frac{\partial (v_2 Q_2)}{\partial y}
+ \;=\; +\, r\, F_2\, q_\text{force}(y) \;-\; r_2\, q_2
 $$
 
-with the meridional cosine forcing
+The meridional cosine forcing is
 
 $$
-q_{\text{force}}(y) \;=\; A\,\cos\!\bigl(\pi y / W\bigr).
+q_\text{force}(y) = A \cos(\pi y / W) .
 $$
 
 - $r$ is the **thermal-relaxation rate** that drives the radiative-equilibrium
@@ -159,7 +177,7 @@ python invocation, then `sbatch slurm/submit_jax_gpu.sbatch`.
 
 ---
 
-## Example: filament run
+## Example run
 
 500-day integration at $R_d = 20$, $\delta = 0.5$, $\beta = 8.64 \times 10^{-4}$,
 $A = 4\times 10^{4}$, $r = 0.10$, $r_1 = r_2 = 0.04$, $n_x \times n_y = 512 \times 256$,
@@ -175,8 +193,7 @@ growth, saturation, late):**
 ![q and psi panels](docs/figures/03_q_psi_panels.png)
 
 **Sliding-window (200 d, 20 d step) skewness and excess kurtosis vs y.
-Layer 2 (lower layer) develops a clear excess kurtosis of ~3 over the bulk
-of the channel — the filament signature.**
+In this regime, the statistics is nearly Gaussian.**
 
 ![skew and kurt](docs/figures/11_skew_kurt_sw.png)
 

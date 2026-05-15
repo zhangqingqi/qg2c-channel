@@ -9,6 +9,7 @@ from run_one_case import run_one_case, save_npz
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(HERE)   # repo root, parent of src/
 
 
 def build_tag(amp, r1, r2, delta, seed):
@@ -37,7 +38,7 @@ def main():
     ap.add_argument("--dt-save-fields", type=float, default=None,
                     help="cadence for detailed field snapshots "
                          "(default 1.0 detailed / 5.0 not)")
-    ap.add_argument("--run-dir", default="outputs/runs_detailed")
+    ap.add_argument("--run-dir", default="outputs/runs")
     ap.add_argument("--detailed", action="store_true")
     ap.add_argument("--analyze", action="store_true")
     ap.add_argument("--label", default=None)
@@ -61,7 +62,10 @@ def main():
     r1 = args.r if args.r1 is None else args.r1
     r2 = args.r if args.r2 is None else args.r2
 
-    run_dir = os.path.join(HERE, args.run_dir)
+    # Resolve --run-dir against the project root (repo root), not src/, so
+    # outputs/ ends up at the top of the repo regardless of where you call from.
+    run_dir = (args.run_dir if os.path.isabs(args.run_dir)
+               else os.path.join(PROJECT_ROOT, args.run_dir))
     os.makedirs(run_dir, exist_ok=True)
     tag = build_tag(args.amp, r1, r2, args.delta, args.seed)
     path = os.path.join(run_dir, tag + ".npz")

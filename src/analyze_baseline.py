@@ -34,6 +34,7 @@ from diagnostics import (
 
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(HERE)   # repo root, parent of src/
 FIG_DIR = ""   # set by main()
 MOV_DIR = ""
 
@@ -88,7 +89,8 @@ def main():
     ap.add_argument("--r2", type=float, default=None)
     ap.add_argument("--delta", type=float, default=0.2)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--run-dir", default=os.path.join(HERE, "outputs", "runs"))
+    ap.add_argument("--run-dir",
+                    default=os.path.join(PROJECT_ROOT, "outputs", "runs"))
     ap.add_argument("--label", default=None,
                     help="figure/movie subdir; defaults to the run tag.")
     args = ap.parse_args()
@@ -98,8 +100,8 @@ def main():
 
     path, d, tag = load_run(args.amp, r1, r2, args.delta, args.seed, args.run_dir)
     label = args.label or tag
-    fig_dir = os.path.join(HERE, "outputs", "figures", label)
-    mov_dir = os.path.join(HERE, "outputs", "movies", label)
+    fig_dir = os.path.join(PROJECT_ROOT, "outputs", "figures", label)
+    mov_dir = os.path.join(PROJECT_ROOT, "outputs", "movies", label)
     os.makedirs(fig_dir, exist_ok=True)
     os.makedirs(mov_dir, exist_ok=True)
     # local references used by the rest of the function
