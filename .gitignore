@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# run artifacts
+outputs/
+*.npz
+*.mp4
+
+# editor / OS
+.vscode/
+.idea/
+.DS_Store

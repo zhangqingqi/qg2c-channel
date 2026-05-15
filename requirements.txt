@@ -1,0 +1,6 @@
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+
+# Optional, only needed for the GPU backend (src/qg2c_jax.py)
+# jax[cuda12]>=0.4.30

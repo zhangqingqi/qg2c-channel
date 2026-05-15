@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="620" viewBox="0 0 980 620">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#1f5fbf"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#b3261e"/>
+    </marker>
+    <style>
+      .title { font: 700 26px sans-serif; fill: #111; }
+      .label { font: 18px sans-serif; fill: #111; }
+      .small { font: 15px sans-serif; fill: #222; }
+      .eq { font: 16px monospace; fill: #111; }
+      .box { fill: #ffffff; stroke: #333; stroke-width: 2; }
+      .water1 { fill: #cfe8ff; stroke: #333; stroke-width: 2; }
+      .water2 { fill: #d9f2e6; stroke: #333; stroke-width: 2; }
+      .wall { stroke: #222; stroke-width: 6; }
+      .dash { stroke-dasharray: 9 7; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="980" height="620" fill="#fafafa"/>
+  <text x="40" y="42" class="title">Two-layer QG beta-plane channel in qg2c.zip</text>
+
+  <!-- Plan view -->
+  <text x="60" y="88" class="label">Plan view: periodic zonal channel</text>
+  <rect x="80" y="105" width="520" height="210" rx="8" class="box"/>
+  <line x1="80" y1="105" x2="600" y2="105" class="wall"/>
+  <line x1="80" y1="315" x2="600" y2="315" class="wall"/>
+  <text x="620" y="112" class="small">wall: y = W</text>
+  <text x="620" y="320" class="small">wall: y = 0</text>
+  <line x1="100" y1="335" x2="580" y2="335" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="322" y="360" class="small">x, length L = 2W, periodic</text>
+  <line x1="60" y1="305" x2="60" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="28" y="215" class="small" transform="rotate(-90 28 215)">y, width W</text>
+  <path d="M80 206 C130 168, 180 250, 230 210 S330 170, 380 220 S500 260, 600 190" fill="none" stroke="#888" stroke-width="2" class="dash"/>
+  <text x="210" y="195" class="small">PV filaments / eddies</text>
+  <line x1="90" y1="195" x2="585" y2="195" stroke="#1f5fbf" stroke-width="4" marker-end="url(#arrowBlue)"/>
+  <line x1="585" y1="235" x2="90" y2="235" stroke="#b3261e" stroke-width="4" marker-end="url(#arrowRed)"/>
+  <text x="610" y="200" class="small" fill="#1f5fbf">upper-layer jet U1</text>
+  <text x="610" y="240" class="small" fill="#b3261e">lower-layer jet U2</text>
+  <text x="112" y="129" class="small">v = psi_x = 0 at walls</text>
+  <text x="112" y="302" class="small">no meridional PV flux</text>
+  <text x="438" y="129" class="small">q periodic in x</text>
+
+  <!-- Cross-section -->
+  <text x="60" y="405" class="label">Vertical cross-section: two active layers</text>
+  <rect x="80" y="430" width="520" height="66" class="water1"/>
+  <rect x="80" y="496" width="520" height="82" class="water2"/>
+  <path d="M80 496 C160 478, 240 514, 320 496 S480 478, 600 496" fill="none" stroke="#333" stroke-width="3"/>
+  <text x="100" y="470" class="label">Layer 1: psi1, q1, depth H1</text>
+  <text x="100" y="545" class="label">Layer 2: psi2, q2, depth H2</text>
+  <text x="612" y="501" class="small">interface displacement h</text>
+  <line x1="640" y1="490" x2="600" y2="496" stroke="#333" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="80" y1="430" x2="80" y2="578" class="wall"/>
+  <line x1="600" y1="430" x2="600" y2="578" class="wall"/>
+  <text x="360" y="602" class="small">baroclinic coupling through deformation radius Rd</text>
+
+  <!-- Equations box -->
+  <rect x="700" y="90" width="240" height="410" rx="12" fill="#ffffff" stroke="#333" stroke-width="2"/>
+  <text x="720" y="125" class="label">Code equations</text>
+  <text x="720" y="165" class="eq">Qi = qi + beta(y-W/2)</text>
+  <text x="720" y="205" class="eq">u_i = -psi_i_y</text>
+  <text x="720" y="230" class="eq">v_i =  psi_i_x</text>
+  <text x="720" y="270" class="eq">q1 = lap psi1</text>
+  <text x="720" y="294" class="eq">   + F1(psi2-psi1)</text>
+  <text x="720" y="332" class="eq">q2 = lap psi2</text>
+  <text x="720" y="356" class="eq">   + F2(psi1-psi2)</text>
+  <text x="720" y="398" class="eq">d qi/dt + div(ui Qi)</text>
+  <text x="720" y="422" class="eq"> = forcing - r qi</text>
+  <text x="720" y="470" class="small">F1=1/[Rd^2(1+delta)]</text>
+  <text x="720" y="492" class="small">F2=delta F1</text>
+</svg>
