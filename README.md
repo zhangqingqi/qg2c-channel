@@ -34,65 +34,36 @@ layer-thickness ratio.
 
 **Stream function ↔ PV inversion** (layer 1 and layer 2 written out):
 
-$$
-q_1 = \nabla^2 \psi_1 + F_1 (\psi_2 - \psi_1)
-$$
+$$q_1 = \nabla^2 \psi_1 + F_1 (\psi_2 - \psi_1)$$
 
-$$
-q_2 = \nabla^2 \psi_2 + F_2 (\psi_1 - \psi_2)
-$$
+$$q_2 = \nabla^2 \psi_2 + F_2 (\psi_1 - \psi_2)$$
 
 with
 
-$$
-F_1 = \frac{1}{R_d^{\,2}\,(1+\delta)},
-\qquad
-F_2 = \delta\, F_1 .
-$$
+$$F_1 = \frac{1}{R_d^2 (1+\delta)}, \qquad F_2 = \delta F_1$$
 
 **Velocities** (same form in both layers):
 
-$$
-u_k = -\frac{\partial \psi_k}{\partial y},
-\qquad
-v_k = \frac{\partial \psi_k}{\partial x},
-\qquad k = 1, 2.
-$$
+$$u_k = -\frac{\partial \psi_k}{\partial y}, \qquad v_k = \frac{\partial \psi_k}{\partial x}, \qquad k = 1, 2$$
 
 **Total PV** (eddy PV plus planetary background $\beta y$, with $W/2$ subtracted
 so that $\beta(y - W/2)$ has zero channel mean):
 
-$$
-Q_1 = q_1 + \beta\,(y - W/2)
-$$
+$$Q_1 = q_1 + \beta (y - W/2)$$
 
-$$
-Q_2 = q_2 + \beta\,(y - W/2)
-$$
+$$Q_2 = q_2 + \beta (y - W/2)$$
 
 **Evolution.** Layer 1:
 
-$$
-\frac{\partial q_1}{\partial t}
- + \frac{\partial (u_1 Q_1)}{\partial x}
- + \frac{\partial (v_1 Q_1)}{\partial y}
- \;=\; -\, r\, F_1\, q_\text{force}(y) \;-\; r_1\, q_1
-$$
+$$\frac{\partial q_1}{\partial t} + \frac{\partial (u_1 Q_1)}{\partial x} + \frac{\partial (v_1 Q_1)}{\partial y} = - r F_1 q_F(y) - r_1 q_1$$
 
 Layer 2:
 
-$$
-\frac{\partial q_2}{\partial t}
- + \frac{\partial (u_2 Q_2)}{\partial x}
- + \frac{\partial (v_2 Q_2)}{\partial y}
- \;=\; +\, r\, F_2\, q_\text{force}(y) \;-\; r_2\, q_2
-$$
+$$\frac{\partial q_2}{\partial t} + \frac{\partial (u_2 Q_2)}{\partial x} + \frac{\partial (v_2 Q_2)}{\partial y} = + r F_2 q_F(y) - r_2 q_2$$
 
 The meridional cosine forcing is
 
-$$
-q_\text{force}(y) = A \cos(\pi y / W) .
-$$
+$$q_F(y) = A \cos(\pi y / W)$$
 
 - $r$ is the **thermal-relaxation rate** that drives the radiative-equilibrium
   vertical shear (acts with opposite signs on the two layers, so it
@@ -116,9 +87,9 @@ $$
 - **PV inversion:** DCT-II for the zonal-mean ($\bar{\psi}$, no-flux walls),
   DST-I along $y$ + FFT along $x$ for the eddies ($\psi'$, Dirichlet walls
   + periodic). Mass-adjustment via a free barotropic mode
-  $\cosh\bigl((y - W/2)/R_d\bigr)$ that keeps total channel mass conserved.
+  $\cosh((y - W/2)/R_d)$ that keeps total channel mass conserved.
 - **Time stepping:** explicit. Each step uses an Adams-Bashforth-style
-  extrapolation $q^{n+1/2} = 1.5\,q^n - 0.5\,q^{n-1}$ to evaluate
+  extrapolation $q^{n+1/2} = 1.5 q^n - 0.5 q^{n-1}$ to evaluate
   velocities at the half-step, then a forward Euler update from $q^{n-1}$.
 - **Advection:** van Leer flux-limited upwind in both $x$ and $y$.
 
@@ -211,7 +182,7 @@ qg2c-channel/
 │   ├── run_one_case.py     # per-case driver + diagnostics
 │   ├── run_single.py       # CLI wrapper around run_one_case
 │   ├── diagnostics.py      # EKE, Zq, spectra, skew/kurt, growth fit
-│   └── analyze_baseline.py # post-run plotting pipeline (figs 01/03/05/07/10/11 + movies)
+│   └── analyze_baseline.py # post-run plotting pipeline (figs 01/03/05/07/10/11)
 ├── slurm/
 │   ├── submit_jax_gpu.sbatch
 │   └── submit_cpu.sbatch
